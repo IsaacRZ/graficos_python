@@ -8,6 +8,7 @@ categorias = ['Categoría A', 'Categoría B', 'Categoría C',
 'Categoría D', 'Categoría E']
 valores = [45, 38, 32, 28, 15]
 
+# Crear figura
 plt.figure(figsize=(10, 6))
 
 # Crear gráfico de barras horizontales
