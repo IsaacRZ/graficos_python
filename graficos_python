@@ -1,0 +1,397 @@
+# -*- coding: utf-8 -*-
+
+# %%
+import matplotlib.pyplot as plt
+
+# Datos de ejemplo
+categorias = ['Categoría A', 'Categoría B', 'Categoría C',
+'Categoría D', 'Categoría E']
+valores = [45, 38, 32, 28, 15]
+
+plt.figure(figsize=(10, 6))
+
+# Crear gráfico de barras horizontales
+plt.barh(categorias, valores, color='#20a6d9', edgecolor='black')
+
+# Personalización
+plt.xlabel('Valores', fontsize=12)
+plt.ylabel('Categorías', fontsize=12)
+plt.title('Gráfico de Barras Horizontales', fontsize=14, fontweight='bold')
+plt.grid(axis='x', alpha=0.3)
+
+# Mostrar valores en las barras
+for i, v in enumerate(valores):
+  plt.text(v + 1, i, str(v), va='center')
+
+plt.tight_layout()
+plt.savefig('grafico_barras_horizontales.png', dpi=300)
+plt.show()
+
+# %%
+import matplotlib.pyplot as plt
+
+# Datos de ejemplo
+meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun']
+ventas = [120, 135, 150, 142, 168, 180]
+
+# Crear figura
+plt.figure(figsize=(10, 6))
+
+		# Crear gráfico de barras verticales
+plt.bar(meses, ventas, color='#84094b', edgecolor='black', width=0.6)
+
+		# Personalización
+plt.xlabel('Meses', fontsize=12)
+plt.ylabel('Ventas (miles)', fontsize=12)
+plt.title('Ventas Mensuales - 2024', fontsize=14, fontweight='bold')
+plt.grid(axis='y', alpha=0.3)
+
+		# Mostrar valores en las barras
+for i, v in enumerate(ventas):
+	plt.text(i, v + 3, str(v), ha='center')
+
+plt.tight_layout()
+plt.savefig('grafico_barras_verticales.png', dpi=300)
+plt.show()
+
+# %%
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Datos de ejemplo
+provincias = ['San José', 'Alajuela', 'Cartago', 'Heredia',
+              'Guanacaste', 'Puntarenas', 'Limón']
+poblacion = [1500, 950, 510, 440, 380, 480, 420]
+
+# Ordenar de mayor a menor
+datos_ordenados = sorted(zip(poblacion, provincias), reverse=False)
+poblacion_ordenada = [p for p, _ in datos_ordenados]
+provincias_ordenadas = [prov for _, prov in datos_ordenados]
+
+# Crear figura
+plt.figure(figsize=(12, 6))
+
+# Colores personalizados
+colores = ['#2e0932', '#84094b', '#20a6d9', '#20dbd8',
+           '#afedeb', '#20a6d9', '#84094b']
+
+# Crear gráfico de barras horizontales
+barras = plt.barh(provincias_ordenadas, poblacion_ordenada, color=colores,
+                  edgecolor='black', linewidth=1.5)
+
+# Personalización
+plt.xlabel('Población (miles)', fontsize=12, fontweight='bold')
+plt.ylabel('Provincias', fontsize=12, fontweight='bold')
+plt.title('Población por Provincia - Costa Rica',
+          fontsize=14, fontweight='bold')
+plt.grid(axis='x', alpha=0.3, linestyle='--')
+
+# Agregar valores
+for i, (barra, valor) in enumerate(zip(barras, poblacion_ordenada)):
+    plt.text(valor + 20, barra.get_y() + barra.get_height()/2.,
+             f'{int(valor)}',
+             ha='left', va='center', fontweight='bold')
+
+plt.tight_layout()
+plt.savefig('grafico_barras_horizontales.png', dpi=300)
+plt.show()
+
+# %%
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Datos de ejemplo
+trimestres = ['Q1', 'Q2', 'Q3', 'Q4']
+producto_a = [30, 35, 32, 38]
+producto_b = [25, 28, 30, 27]
+producto_c = [20, 22, 25, 28]
+
+# Convertir a arrays de numpy para operaciones
+producto_a = np.array(producto_a)
+producto_b = np.array(producto_b)
+producto_c = np.array(producto_c)
+
+# Crear figura
+plt.figure(figsize=(10, 6))
+
+# Crear barras apiladas
+plt.bar(trimestres, producto_a, label='Producto A',
+        color='#2e0932', edgecolor='black')
+plt.bar(trimestres, producto_b, bottom=producto_a,
+        label='Producto B', color='#20a6d9', edgecolor='black')
+plt.bar(trimestres, producto_c,
+        bottom=producto_a + producto_b,
+        label='Producto C', color='#afedeb', edgecolor='black')
+
+# Personalización
+plt.xlabel('Trimestres', fontsize=12, fontweight='bold')
+plt.ylabel('Ventas (miles)', fontsize=12, fontweight='bold')
+plt.title('Ventas por Producto - Año 2024',
+          fontsize=14, fontweight='bold')
+plt.legend(loc='upper left')
+plt.grid(axis='y', alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('grafico_barras_compuestas.png', dpi=300)
+plt.show()
+
+# %%
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Datos de ejemplo
+categorias = ['Enero', 'Febrero', 'Marzo', 'Abril']
+ingresos = [45, 52, 48, 58]
+gastos = [38, 42, 40, 45]
+utilidad = [7, 10, 8, 13]
+
+# Configuración de posiciones
+x = np.arange(len(categorias))
+ancho = 0.25
+
+# Crear figura
+fig, ax = plt.subplots(figsize=(12, 6))
+
+# Crear barras agrupadas
+barras1 = ax.bar(x - ancho, ingresos, ancho, label='Ingresos',
+                 color='#20a6d9', edgecolor='black')
+barras2 = ax.bar(x, gastos, ancho, label='Gastos',
+                 color='#84094b', edgecolor='black')
+barras3 = ax.bar(x + ancho, utilidad, ancho, label='Utilidad',
+                 color='#afedeb', edgecolor='black')
+
+# Personalización
+ax.set_xlabel('Meses', fontsize=12, fontweight='bold')
+ax.set_ylabel('Monto (millones)', fontsize=12, fontweight='bold')
+ax.set_title('Comparación Financiera Mensual',
+             fontsize=14, fontweight='bold')
+ax.set_xticks(x)
+ax.set_xticklabels(categorias)
+ax.legend()
+ax.grid(axis='y', alpha=0.3)
+
+# Agregar valores
+for barras in [barras1, barras2, barras3]:
+    for barra in barras:
+        altura = barra.get_height()
+        ax.text(barra.get_x() + barra.get_width()/2., altura,
+                f'{int(altura)}', ha='center', va='bottom', fontsize=9)
+
+plt.tight_layout()
+plt.savefig('grafico_barras_comparativas.png', dpi=300)
+plt.show()
+
+# %%
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Datos de ejemplo (Pirámide poblacional)
+grupos_edad = ['0-9', '10-19', '20-29', '30-39',
+               '40-49', '50-59', '60-69', '70+']
+hombres = [-5.2, -5.8, -6.5, -6.2, -5.5, -4.8, -3.2, -2.1]
+mujeres = [5.0, 5.5, 6.3, 6.0, 5.3, 4.9, 3.5, 2.5]
+
+# Crear figura
+fig, ax = plt.subplots(figsize=(10, 8))
+
+# Crear barras horizontales
+y_pos = np.arange(len(grupos_edad))
+ax.barh(y_pos, hombres, align='center', color='#20a6d9',
+        label='Hombres', edgecolor='black')
+ax.barh(y_pos, mujeres, align='center', color='#84094b',
+        label='Mujeres', edgecolor='black')
+
+# Personalización
+ax.set_yticks(y_pos)
+ax.set_yticklabels(grupos_edad)
+ax.set_xlabel('Población (%)', fontsize=12, fontweight='bold')
+ax.set_ylabel('Grupos de Edad', fontsize=12, fontweight='bold')
+ax.set_title('Pirámide Poblacional - Costa Rica 2024',
+             fontsize=14, fontweight='bold')
+ax.legend()
+ax.grid(axis='x', alpha=0.3)
+
+# Ajustar etiquetas del eje x para mostrar valores absolutos
+ax.set_xticks([-8, -6, -4, -2, 0, 2, 4, 6, 8])
+ax.set_xticklabels(['8', '6', '4', '2', '0', '2', '4', '6', '8'])
+
+# Agregar línea vertical en el centro
+ax.axvline(0, color='black', linewidth=0.8)
+
+plt.tight_layout()
+plt.savefig('grafico_piramide.png', dpi=300)
+plt.show()
+
+# %%
+import matplotlib.pyplot as plt
+
+# Datos de ejemplo
+categorias = ['Producto A', 'Producto B', 'Producto C',
+              'Producto D', 'Otros']
+valores = [30, 25, 20, 15, 10]
+colores = ['#2e0932', '#84094b', '#20a6d9', '#20dbd8', '#afedeb']
+
+# Crear figura
+fig, ax = plt.subplots(figsize=(10, 8))
+
+# Crear gráfico circular
+wedges, texts, autotexts = ax.pie(valores, labels=categorias,
+                                    autopct='%1.1f%%',
+                                    colors=colores,
+                                    startangle=90,
+                                    explode=(0.05, 0, 0, 0, 0),
+                                    shadow=True)
+
+# Personalización de textos
+for text in texts:
+    text.set_fontsize(12)
+    text.set_fontweight('bold')
+
+for autotext in autotexts:
+    autotext.set_color('white')
+    autotext.set_fontsize(11)
+    autotext.set_fontweight('bold')
+
+ax.set_title('Distribución de Ventas por Producto',
+             fontsize=14, fontweight='bold', pad=20)
+
+plt.tight_layout()
+plt.savefig('grafico_circular.png', dpi=300)
+plt.show()
+
+# %%
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Datos de ejemplo (porcentajes)
+regiones = ['Norte', 'Sur', 'Este', 'Oeste']
+categoria_a = np.array([35, 30, 25, 40])
+categoria_b = np.array([30, 35, 30, 25])
+categoria_c = np.array([20, 20, 25, 20])
+categoria_d = np.array([15, 15, 20, 15])
+
+# Crear figura
+fig, ax = plt.subplots(figsize=(12, 6))
+
+# Crear barras apiladas al 100%
+x = np.arange(len(regiones))
+ancho = 0.6
+
+p1 = ax.bar(x, categoria_a, ancho, label='Categoría A',
+            color='#2e0932', edgecolor='black')
+p2 = ax.bar(x, categoria_b, ancho, bottom=categoria_a,
+            label='Categoría B', color='#84094b', edgecolor='black')
+p3 = ax.bar(x, categoria_c, ancho,
+            bottom=categoria_a + categoria_b,
+            label='Categoría C', color='#20a6d9', edgecolor='black')
+p4 = ax.bar(x, categoria_d, ancho,
+            bottom=categoria_a + categoria_b + categoria_c,
+            label='Categoría D', color='#afedeb', edgecolor='black')
+
+# Personalización
+ax.set_ylabel('Porcentaje (%)', fontsize=12, fontweight='bold')
+ax.set_xlabel('Regiones', fontsize=12, fontweight='bold')
+ax.set_title('Distribución Porcentual por Región',
+             fontsize=14, fontweight='bold')
+ax.set_xticks(x)
+ax.set_xticklabels(regiones)
+ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+ax.set_ylim(0, 100)
+ax.grid(axis='y', alpha=0.3)
+
+# Agregar línea de referencia al 100%
+ax.axhline(y=100, color='red', linestyle='--', linewidth=1, alpha=0.5)
+
+plt.tight_layout()
+plt.savefig('grafico_barras_100.png', dpi=300)
+plt.show()
+
+# %%
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Datos de ejemplo
+meses = np.arange(1, 13)
+ventas_2023 = [120, 135, 145, 140, 155, 160, 158, 165, 170, 168, 175, 180]
+ventas_2024 = [125, 140, 152, 148, 165, 172, 168, 178, 185, 182, 190, 195]
+
+# Crear figura
+plt.figure(figsize=(12, 6))
+
+# Crear líneas
+plt.plot(meses, ventas_2023, marker='o', linewidth=2,
+         markersize=8, label='2023', color='#84094b')
+plt.plot(meses, ventas_2024, marker='s', linewidth=2,
+         markersize=8, label='2024', color='#20a6d9')
+
+# Personalización
+plt.xlabel('Meses', fontsize=12, fontweight='bold')
+plt.ylabel('Ventas (miles)', fontsize=12, fontweight='bold')
+plt.title('Evolución de Ventas Mensuales - Comparación Anual',
+          fontsize=14, fontweight='bold')
+plt.xticks(meses, ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+                   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'])
+plt.legend(fontsize=11)
+plt.grid(True, alpha=0.3, linestyle='--')
+
+# Agregar anotaciones
+max_2024 = max(ventas_2024)
+max_mes = ventas_2024.index(max_2024) + 1
+plt.annotate(f'Máximo: {max_2024}',
+             xy=(max_mes, max_2024),
+             xytext=(max_mes-1, max_2024+5),
+             arrowprops=dict(arrowstyle='->', color='red'),
+             fontsize=10, fontweight='bold')
+
+plt.tight_layout()
+plt.savefig('grafico_lineal.png', dpi=300)
+plt.show()
+
+# %%
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Datos de ejemplo
+categorias = ['Comunicación', 'Trabajo en Equipo', 'Liderazgo',
+              'Creatividad', 'Análisis', 'Técnicas']
+estudiante_a = [8, 7, 6, 9, 7, 8]
+estudiante_b = [7, 9, 8, 6, 8, 7]
+
+# Número de variables
+num_vars = len(categorias)
+
+# Calcular ángulos para cada eje
+angulos = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
+
+# Cerrar el polígono (usando copias para no modificar las listas originales)
+estudiante_a_plot = estudiante_a + estudiante_a[:1]
+estudiante_b_plot = estudiante_b + estudiante_b[:1]
+angulos_plot = angulos + angulos[:1]
+
+# Crear figura
+fig, ax = plt.subplots(figsize=(10, 10), subplot_kw=dict(projection='polar'))
+
+# Plotear datos
+ax.plot(angulos_plot, estudiante_a_plot, 'o-', linewidth=2,
+        label='Estudiante A', color='#20a6d9')
+ax.fill(angulos_plot, estudiante_a_plot, alpha=0.25, color='#20a6d9')
+
+ax.plot(angulos_plot, estudiante_b_plot, 'o-', linewidth=2,
+        label='Estudiante B', color='#84094b')
+ax.fill(angulos_plot, estudiante_b_plot, alpha=0.25, color='#84094b')
+
+# Personalización
+ax.set_xticks(angulos)
+ax.set_xticklabels(categorias, fontsize=11)
+ax.set_ylim(0, 10)
+ax.set_yticks([2, 4, 6, 8, 10])
+ax.set_yticklabels(['2', '4', '6', '8', '10'], fontsize=9)
+ax.set_title('Evaluación de Competencias',
+             fontsize=14, fontweight='bold', pad=20)
+ax.legend(loc='upper right', bbox_to_anchor=(1.3, 1.1))
+ax.grid(True)
+
+plt.tight_layout()
+plt.savefig('grafico_araña.png', dpi=300)
+plt.show()
+# %%
