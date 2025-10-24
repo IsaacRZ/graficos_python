@@ -8,6 +8,10 @@
 
 #py -m pip install nbformat (soporte para verlo en laptop)
 
+#py -m pip install geopandas (poder leer arvhivos .zip)
+
+#py -m pip install unidecode (para normalizar los datos)
+
 #%%
 import pandas as pd
 import numpy as np
@@ -91,17 +95,15 @@ fig, ax = plt.subplots(figsize=(10, 6))
 
 bar_width = 0.12 
 x = np.arange(len(pivot_df.index)) 
-num_sub_cats = len(pivot_df.columns) # Esta es la variable correcta
+num_sub_cats = len(pivot_df.columns)
 
-# CORRECCIÓN: Usar num_sub_cats en lugar de num_delitos
 offset_group_start = x - (bar_width * num_sub_cats / 2) + (bar_width / 2) 
 
-# También corregimos el slicing de la paleta para usar num_sub_cats
 COLORES_DELITOS =["#e0f3db", "#a2d2a4", "#7bba91", "#559f80", "#2e846f", "#006a5e"][:num_sub_cats] 
 
 for i, sub_cat in enumerate(pivot_df.columns):
     ax.bar(
-        offset_group_start + (i * bar_width), # Nueva posición centrada
+        offset_group_start + (i * bar_width),
         pivot_df[sub_cat],
         width=bar_width,
         label=sub_cat,
@@ -122,4 +124,28 @@ ax.legend(title="Tipo de Delito",
             loc='upper left')
 
 plt.show()
+# %%
+import pandas as pd
+import geopandas as gpd
+import numpy as np
+import matplotlib.pyplot as plt
+
+#link de datos
+link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
+datos = pd.read_excel(link)
+
+
+filtro = datos["Provincia"] != "DESCONOCIDO" #los valores se transforman en booleanos y excluye DESCONOCIDO
+datos_filtrados = datos[filtro] #los valores se convierten en un data frame
+delitos = datos_filtrados['Delito'].value_counts()
+orden_delitos = delitos.index.tolist()
+
+my_circle = plt.Circle( (0,0), 0.7, color='white')
+
+
+plt.pie(delitos, labels=orden_delitos, colors= ["#004C40", "#008A7C",	 "#00A89C", "#00C9BC", "#4DB8AC",	"#7FC8BE", "#B2D9D0"])
+p = plt.gcf()
+p.gca().add_artist(my_circle)
+# %%
+
 # %%
