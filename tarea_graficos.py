@@ -126,7 +126,6 @@ ax.legend(title="Tipo de Delito",
 plt.show()
 # %%
 import pandas as pd
-import geopandas as gpd
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -134,7 +133,7 @@ import matplotlib.pyplot as plt
 link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
 datos = pd.read_excel(link)
 
-
+filtro_incluir = (datos["Provincia"] == "SAN JOSE") #Filtro para solo inlcuir a San José
 filtro = datos["Provincia"] != "DESCONOCIDO" #los valores se transforman en booleanos y excluye DESCONOCIDO
 datos_filtrados = datos[filtro] #los valores se convierten en un data frame
 delitos = datos_filtrados['Delito'].value_counts()
@@ -143,9 +142,55 @@ orden_delitos = delitos.index.tolist()
 my_circle = plt.Circle( (0,0), 0.7, color='white')
 
 
-plt.pie(delitos, labels=orden_delitos, colors= ["#004C40", "#008A7C",	 "#00A89C", "#00C9BC", "#4DB8AC",	"#7FC8BE", "#B2D9D0"])
+plt.pie(delitos, labels=orden_delitos, colors= ["#006a5e", "#2e846f", "#559f80", "#7bba91", "#a2d2a4", "#e0f3db"])
 p = plt.gcf()
 p.gca().add_artist(my_circle)
 # %%
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
+link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
+datos = pd.read_excel(link)
+
+filtro = datos["Provincia"] == "SAN JOSE" #los valores se transforman en booleanos y excluye DESCONOCIDO
+datos_filtrados = datos[filtro] #los valores se convierten en un data frame
+delitos = datos_filtrados['Delito'].value_counts()
+orden_delitos = delitos.index.tolist()
+
+# %%
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
+datos = pd.read_excel(link)
+
+datos["Fecha"] = pd.to_datetime(datos["Fecha"], errors='coerce')
+datos['Nombre_Mes'] = datos["Fecha"].dt.month_name(locale='es_ES')
+datos['Numero_Mes'] = datos["Fecha"].dt.month
+datos_limpios = datos.dropna(subset=['Nombre_Mes'])
+
+conteo_mensual = datos_limpios.groupby(['Numero_Mes', 'Nombre_Mes']).size().reset_index(name='Total_Delitos')
+conteo_mensual = conteo_mensual.sort_values(by='Numero_Mes')
+
+fig, ax = plt.subplots(figsize=(10, 6)) 
+
+plt.plot('Nombre_Mes', 'Total_Delitos', 
+         data=conteo_mensual, 
+         linestyle='-', 
+         marker='o', 
+         color='#7bba91',
+         label='Total Delitos')
+
+
+plt.title("Distribución de Delitos por Mes en 2024", loc='left')
+plt.xlabel("Mes")
+plt.ylabel("Cantidad de Delitos")
+
+fig.autofmt_xdate(rotation=35) 
+
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.legend() 
+plt.show()
 # %%
