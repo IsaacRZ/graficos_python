@@ -189,4 +189,200 @@ fig.autofmt_xdate(rotation=35)
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.legend() 
 plt.show()
-# %%
+
+# ISAAC
+# %% Nuevo Gráfico: Barras Verticales (Total Delitos por Mes)
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Se reutiliza el código de limpieza de la sección de Línea para tener los datos mensuales
+link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
+datos = pd.read_excel(link)
+
+datos["Fecha"] = pd.to_datetime(datos["Fecha"], errors='coerce')
+datos['Nombre_Mes'] = datos["Fecha"].dt.month_name(locale='es_ES')
+datos['Numero_Mes'] = datos["Fecha"].dt.month
+datos_limpios = datos.dropna(subset=['Nombre_Mes'])
+
+conteo_mensual = datos_limpios.groupby(['Numero_Mes', 'Nombre_Mes']).size().reset_index(name='Total_Delitos')
+conteo_mensual = conteo_mensual.sort_values(by='Numero_Mes')
+meses = conteo_mensual['Nombre_Mes']
+delitos_mes = conteo_mensual['Total_Delitos']
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+ax.bar(meses, delitos_mes, color='#559f80', zorder=3)
+
+ax.set_title("Distribución de Delitos por Mes (Barras Verticales)", loc='left')
+ax.set_xlabel("Mes")
+ax.set_ylabel("Cantidad de Delitos")
+
+ax.set_axisbelow(True)
+ax.grid(axis='y', linestyle='--', alpha=0.7, zorder=0)
+fig.autofmt_xdate(rotation=35) 
+
+plt.show()
+
+# %% Nuevo Gráfico: Barras Simples (Delitos por Provincia)
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
+datos = pd.read_excel(link)
+
+filtro = datos["Provincia"] != "DESCONOCIDO" 
+datos_filtrados = datos[filtro]
+provincias_conteo = datos_filtrados['Provincia'].value_counts()
+provincias_ordenadas = provincias_conteo.index.tolist()
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+ax.bar(provincias_ordenadas, provincias_conteo.values, color='#006a5e', zorder=3)
+
+ax.set_title("Total de Delitos por Provincia (Barras Simples)", loc='left')
+ax.set_xlabel("Provincia")
+ax.set_ylabel("Cantidad de Delitos")
+
+ax.set_axisbelow(True)
+ax.grid(axis='y', linestyle='--', alpha=0.7, zorder=0)
+
+plt.show()
+
+# %% Nuevo Gráfico: Barras 100% (Distribución Porcentual de Delito por Provincia)
+import pandas as pd
+import plotly.express as px
+
+link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
+datos = pd.read_excel(link)
+
+filtro = datos["Provincia"] != "DESCONOCIDO" 
+datos_filtrados = datos[filtro]
+
+# Crea una tabla de frecuencias de Delito por Provincia
+df_crosstab = pd.crosstab(datos_filtrados['Provincia'], datos_filtrados['Delito'])
+
+# Calcula el porcentaje: divide cada valor entre la suma total de su fila (axis=1)
+df_percent = df_crosstab.apply(lambda x: x / x.sum(), axis=1)
+df_percent = df_percent.stack().reset_index(name='Porcentaje')
+df_percent['Porcentaje'] = df_percent['Porcentaje'] * 100 # Convertir a %
+
+# Usa Plotly para un gráfico de barras 100% (con mode='percent')
+fig = px.bar(
+    df_percent,
+    x='Porcentaje', 
+    y='Provincia',
+    color='Delito',
+    orientation='h',
+    height=500,
+    title="Distribución Porcentual (100%) de Delitos por Provincia",
+    color_discrete_sequence=["#006a5e", "#2e846f", "#559f80", "#7bba91", "#a2d2a4", "#e0f3db"],
+    category_orders={"y": df_percent['Provincia'].unique().tolist()}
+)
+
+fig.update_layout(xaxis_title='Porcentaje de Delitos', yaxis_title='Provincia')
+fig.update_traces(
+    hovertemplate="<b>Provincia:</b> %{y}<br>" +
+                  "<b>Delito:</b> %{customdata[0]}<br>" + 
+                  "<b>Porcentaje:</b> %{x:.2f}%%<extra></extra>",
+    customdata=df_percent[['Delito']]
+)
+fig.show()
+
+# %% Nuevo Gráfico: Pirámide (Comparativa Delitos San José vs Alajuela)
+import pandas as pd
+import plotly.express as px
+
+link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
+datos = pd.read_excel(link)
+
+# Filtrar solo San José y Alajuela
+provincias_a_comparar = ["SAN JOSE", "ALAJUELA"]
+datos_comparativa = datos[datos["Provincia"].isin(provincias_a_comparar)].copy()
+
+# Contar la ocurrencia de cada Delito en cada Provincia
+delitos_conteo = datos_comparativa.groupby(['Delito', 'Provincia']).size().reset_index(name='Total_Delitos')
+
+# Para la pirámide, los datos de un lado deben ser negativos (eje x)
+delitos_conteo['Total_Delitos_Piramide'] = delitos_conteo.apply(
+    lambda row: row['Total_Delitos'] * -1 if row['Provincia'] == 'ALAJUELA' else row['Total_Delitos'], axis=1
+)
+
+# Usa Plotly para crear la pirámide (gráfico de barras lateral a lateral)
+fig = px.bar(
+    delitos_conteo, 
+    x='Total_Delitos_Piramide', 
+    y='Delito', 
+    color='Provincia',
+    orientation='h',
+    height=800,
+    title="Pirámide de Delitos: Comparativa San José vs Alajuela",
+    color_discrete_sequence=['#006a5e', '#559f80'] # Usando tus colores
+)
+
+fig.update_layout(
+    barmode='relative',
+    xaxis=dict(
+        tickvals=[-1000, -500, 0, 500, 1000], # Ejemplo de valores, ajusta según tus datos
+        ticktext=['1000', '500', '0', '500', '1000'],
+        title='Cantidad de Delitos'
+    ),
+    yaxis=dict(title='Tipo de Delito')
+)
+
+fig.update_traces(
+    hovertemplate="<b>Provincia:</b> %{customdata[0]}<br>" +
+                  "<b>Delitos:</b> %{x|:,.0f}<br>" +
+                  "<extra></extra>",
+    customdata=delitos_conteo[['Provincia']]
+)
+
+fig.show()
+
+# %% Nuevo Gráfico: Araña (Radar) - Matplotlib
+import pandas as pd
+import matplotlib.pyplot as plt
+from math import pi
+
+link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
+datos = pd.read_excel(link)
+
+provincias_radar = ["SAN JOSE", "HEREDIA", "CARTAGO"]
+datos_radar = datos[datos["Provincia"].isin(provincias_radar)].copy()
+
+# Crear tabla cruzada para contar delitos por provincia
+df_radar = pd.crosstab(datos_radar['Provincia'], datos_radar['Delito'])
+df_radar = df_radar.T # Transponer para que los delitos sean las filas (ejes del radar)
+
+# 1. Normalizar los datos: Escalar los valores entre 0 y 1 para que el gráfico sea comparable
+df_normalized = (df_radar - df_radar.min()) / (df_radar.max() - df_radar.min())
+categories = df_normalized.index.tolist()
+N = len(categories)
+
+# 2. Preparar el ángulo para cada eje
+angles = [n / float(N) * 2 * pi for n in range(N)]
+angles += angles[:1] # Cierra el círculo
+
+fig, ax = plt.subplots(figsize=(10, 10), subplot_kw=dict(polar=True))
+
+# 3. Dibujar cada provincia
+for i, provincia in enumerate(provincias_radar):
+    values = df_normalized[provincia].values.flatten().tolist()
+    values += values[:1] # Cierra la línea
+
+    # Dibujar la línea y el área
+    color = ["#006a5e", "#559f80", "#a2d2a4"][i]
+    ax.plot(angles, values, linewidth=2, linestyle='solid', label=provincia, color=color)
+    ax.fill(angles, values, color=color, alpha=0.2)
+
+# 4. Configuración del gráfico
+ax.set_xticks(angles[:-1])
+ax.set_xticklabels(categories, size=8) # Etiquetas de los delitos
+ax.set_yticks([0.25, 0.50, 0.75, 1.00]) # Puntos de la escala
+ax.set_yticklabels(["25%", "50%", "75%", "100%"], color='grey', size=7)
+ax.set_ylim(0, 1)
+
+plt.title("Gráfico de Araña: Comparativa de Delitos Normalizados (San José, Heredia, Cartago)", size=12, y=1.1, loc='left')
+plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
+plt.show()
