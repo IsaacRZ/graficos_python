@@ -1,15 +1,11 @@
 #Tarea gráficos en Python
 #Ejecutar los códigos en la terminal para la instalación de las librerías utilizadas
+#python -m pip install pandas plotly xlrd nbformat geopandas unidecode (Isaac*)
 #py -m pip install pandas (lectura de link externo)
-
 #py -m pip install plotly (creación de gráficos dinámicos)
-
 #py -m pip install xlrd (soporte de lectura del archivo de los datos)
-
 #py -m pip install nbformat (soporte para verlo en laptop)
-
 #py -m pip install geopandas (poder leer arvhivos .zip)
-
 #py -m pip install unidecode (para normalizar los datos)
 
 #%%
