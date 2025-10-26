@@ -290,26 +290,28 @@ fig.update_traces(
 )
 fig.show()
 
-# %% Nuevo Gráfico: Pirámide (Comparativa Delitos San José vs Alajuela)
+# %% Gráfico de Pirámide: Comparativa Delitos San José vs Alajuela
 import pandas as pd
 import plotly.express as px
 
 link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
 datos = pd.read_excel(link)
 
-# Filtrar solo San José y Alajuela
 provincias_a_comparar = ["SAN JOSE", "ALAJUELA"]
 datos_comparativa = datos[datos["Provincia"].isin(provincias_a_comparar)].copy()
 
 # Contar la ocurrencia de cada Delito en cada Provincia
 delitos_conteo = datos_comparativa.groupby(['Delito', 'Provincia']).size().reset_index(name='Total_Delitos')
 
-# Para la pirámide, los datos de un lado deben ser negativos (eje x)
+# Obtener el orden de los delitos por su frecuencia total (de menor a mayor)
+orden_frecuencia = delitos_conteo.groupby('Delito')['Total_Delitos'].sum().sort_values(ascending=True).index.tolist()
+
+# Convertir el conteo de Alajuela a negativo para la visualización de pirámide
 delitos_conteo['Total_Delitos_Piramide'] = delitos_conteo.apply(
     lambda row: row['Total_Delitos'] * -1 if row['Provincia'] == 'ALAJUELA' else row['Total_Delitos'], axis=1
 )
 
-# Usa Plotly para crear la pirámide (gráfico de barras lateral a lateral)
+# Usar Plotly para crear la pirámide
 fig = px.bar(
     delitos_conteo, 
     x='Total_Delitos_Piramide', 
@@ -318,13 +320,16 @@ fig = px.bar(
     orientation='h',
     height=800,
     title="Pirámide de Delitos: Comparativa San José vs Alajuela",
-    color_discrete_sequence=['#006a5e', '#559f80'] # Usando tus colores
+    color_discrete_sequence=['#006a5e', '#559f80'],
+    # Aplicar el orden de frecuencia
+    category_orders={"Delito": orden_frecuencia} 
 )
 
 fig.update_layout(
     barmode='relative',
     xaxis=dict(
-        tickvals=[-1000, -500, 0, 500, 1000], # Ejemplo de valores, ajusta según tus datos
+        # Ajustar los ticks para un rango simétrico y centrado en cero
+        tickvals=[-1000, -500, 0, 500, 1000], 
         ticktext=['1000', '500', '0', '500', '1000'],
         title='Cantidad de Delitos'
     ),
@@ -339,6 +344,7 @@ fig.update_traces(
 )
 
 fig.show()
+
 
 # %% Nuevo Gráfico: Araña (Radar) - Matplotlib
 import pandas as pd
