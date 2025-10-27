@@ -1,0 +1,138 @@
+%Ejecutá esto en Overleaf para que veas que tal
+
+\documentclass[a0paper,portrait]{baposter}
+
+\usepackage{wrapfig}
+\usepackage{lmodern}
+\usepackage{lipsum,graphicx}
+\usepackage[utf8]{inputenc} %unicode support
+\usepackage[T1]{fontenc}
+
+\selectcolormodel{cmyk}
+
+\graphicspath{{figures/}} % Directory in which figures are stored
+
+\newcommand{\compresslist}{%
+\setlength{\itemsep}{0pt}%
+\setlength{\parskip}{1pt}%
+\setlength{\parsep}{0pt}%
+}
+
+\newenvironment{boenumerate}
+  {\begin{enumerate}\renewcommand\labelenumi{\textbf\theenumi.}}
+  {\end{enumerate}}
+
+
+\begin{document}
+
+\definecolor{Mycolor1}{HTML}{4C9B82}
+\definecolor{Mycolor2}{HTML}{97E196}
+
+\begin{poster}
+{
+grid=false,
+headerborder=open, % Adds a border around the header of content boxes
+colspacing=1em, % Column spacing
+bgColorOne=white, % Background color for the gradient on the left side of the poster
+bgColorTwo=white, % Background color for the gradient on the right side of the poster
+borderColor=Mycolor1, % Border color
+headerColorOne=Mycolor2, % Background color for the header in the content boxes (left side)
+headerColorTwo=Mycolor2, % Background color for the header in the content boxes (right side)
+headerFontColor=white, % Text color for the header text in the content boxes
+boxColorOne=white, % Background color of the content boxes
+textborder=rounded, %rectangle, % Format of the border around content boxes, can be: none, bars, coils, triangles, rectangle, rounded, roundedsmall, roundedright or faded
+eyecatcher=false, % Set to false for ignoring the left logo in the title and move the title left
+headerheight=0.11\textheight, % Height of the header
+headershape=rounded, % Specify the rounded corner in the content box headers, can be: rectangle, small-rounded, roundedright, roundedleft or rounded
+headershade=plain,
+headerfont=\Large\textsf, % Large, bold and sans serif font in the headers of content boxes
+%textfont={\setlength{\parindent}{1.5em}}, % Uncomment for paragraph indentation
+linewidth=2pt % Width of the border lines around content boxes
+}
+{}
+%
+%----------------------------------------------------------------------------------------
+%	TITLE AND AUTHOR NAME
+%----------------------------------------------------------------------------------------
+%
+{
+\textsf %Sans Serif
+{
+{Gráficos Estadísticos: Barras Horizontales y \\ 
+ Verticales}
+}
+} % Poster title
+% {\vspace{0.2em} Add Author Name, Add another author name\\ 
+% {\small \vspace{0.7em} Department of Computing, TU Dublin, Tallaght, Dublin, Ireland}} 
+{\sf\vspace{0.2em}\\
+Sebastián Calvo Solano, Isaac Rodríguez  % Author names
+\vspace{0.1em}\\
+\small{ Colegio Universitario de Cartago
+ % Author email addresses
+}
+}
+{\includegraphics[width=.13\linewidth]{cuc.png}} 
+
+
+% this states the box starts at column 0 (edge of page), row 0 (top of page) for a span of 3 (columns wide)
+\headerbox{Barra Horizontal}{name=introduction,column=0,row=0, span=3}{
+\Large El gráfico de barras horizontal se utiliza para mostrar datos cualitativos o geográficos, se coloca de menor a mayor donde la barra mas larga se posiciona arriba y en caso de haber una barra "otros" se coloca en la parte inferior.
+\\Los datos utilizados para realizar los gráficos fueron obtenidos del dataset del oij:  \\
+https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024
+
+\vspace{1cm} %remove this, only added for spacing
+
+}
+
+% this states the box starts at column 0 (edge of page), directly below the box labelled introduction for a span of 1 (column wide)
+\headerbox{Gráfico)}{name=subtopic1,column=0,below=introduction,span=1}{
+{\includegraphics[width=1\linewidth, height=8cm]{horizontal.png}}
+%\vspace{0.15cm}
+\Large 
+
+\vspace{0.5cm} %remove this, only added for spacing
+
+}
+
+% this states the box starts at column 0 (edge of page), directly below the box labelled subtopic1 for a span of 1 (column wide)
+
+\headerbox{Sub Topic 3}{name=subtopic3,column=1,below=introduction,span=2}{
+\vspace{0.3cm}
+
+% inserts an image inside the box, 5 rows high
+
+\subsubsection*{Código utilizado realizar el gráfico en Python:}
+
+\includegraphics[width=1\linewidth]{CodigoBH.png} 
+\vspace{0.1cm} %remove this, only added for spacing
+
+}
+
+
+\headerbox{Barra Vertical}{name=conclusion,column=0,below=topicoverview,span=3,below=subtopic3}{
+\large El gráfico de barras verticales se utiliza para mostrar datos cuantitativos discretos o cronológicos, estas mantienen un orden temporal o numérico y deja el mismo espacio entre barras para una mejor consistencia visual.
+\\Los datos utilizados para realizar los gráficos fueron obtenidos del dataset del oij:  \\
+https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024
+\vspace{0.2cm}
+
+}
+
+\headerbox{Topic Overview}{name=topicoverview,column=0,span=3,above=bottom}{
+{
+    {
+        \hspace{0.5cm}
+        \centering
+    	\includegraphics[width.20\linewidth, height=5cm]{Vertical.png}
+    }
+    {
+        \hspace{1.5cm}
+        \centering
+    	\includegraphics[width=.50\linewidth, height=7.5cm]{CodigoBV.png}
+    }
+}
+
+}
+
+\end{poster}
+
+\end{document}

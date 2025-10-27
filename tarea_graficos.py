@@ -13,35 +13,37 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 
+
 link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
 datos = pd.read_excel(link)
 
 filtro = datos["Provincia"] != "DESCONOCIDO" #los valores se transforman en booleanos y excluye DESCONOCIDO
 datos_filtrados = datos[filtro] #los valores se convierten en un data frame
 provincias = datos_filtrados['Provincia'].value_counts()
-orden_provincias = provincias.index.tolist()
+orden_provincias = provincias.index.tolist() #Ordenar las provincias en orden de delitos para mayor comodidad
 
+#Gráfico de Barras Horizontal
 fig = px.bar(
-        x=provincias.values, 
-        y=provincias.index,
-        orientation= 'h',
-        height=400,
-        title="Cantidad de delitos por provincia en 2024",
-        color=provincias.values,
+        x=provincias.values, #Valores del eje x (en este caso las provincias)
+        y=provincias.index,  #Valores del eje y (en este caso los delitos)
+        orientation= 'h', #Para poder poner las barras en modo horizonal hay que poner la H
+        height=400, #Grosor de las barras
+        title="Cantidad de delitos por provincia en 2024", #Título del gráfico
+        color=provincias.values, #Colores utilizados que se ajustan a la cantidad de delitos de la provincia
         color_continuous_scale=[(0.00, "#c8ecca"),   (0.25, "#97ca99"),
                                 (0.30, "#7bba91"), (0.50, "#559f80"),
                                 (0.60, "#2e846f"),  (1.00, "#006a5e")],
-        category_orders={"y": orden_provincias}
+        category_orders={"y": orden_provincias} # Ordena el eje y por cantidad de delitos
 )
 
-fig.update_traces(
-    hovertemplate="<b>Provincia:</b> %{y}<br>" +
-                  "<b>Delitos:</b> %{x:,}<br>" +
-                  "<extra></extra>" 
+fig.update_traces( #Al ser hecho en "plotly" es un gráfico dinámico lo cual esto es para configurar el hover
+    hovertemplate="<b>Provincia:</b> %{y}<br>" + #Nos muestra el nombre de la provincia
+                  "<b>Delitos:</b> %{x:,}<br>" + #Nos muestra la cantidad exacta de delitos
+                  "<extra></extra>"  
 )
 
-fig.update_xaxes(title_text='Provincias')
-fig.update_yaxes(title_text='Cantidad de Delitos')
+fig.update_xaxes(title_text='Provincias') #Leyenda del eje x
+fig.update_yaxes(title_text='Cantidad de Delitos') #Leyenda del eje y
 
 fig.show()
 #%%
@@ -192,32 +194,37 @@ plt.show()
 
 # ISAAC
 # %% Nuevo Gráfico: Barras Verticales (Total Delitos por Mes)
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+import pandas as pd #Librería que permite lectura de datos en línea
+import numpy as np #Librería que permite una mejor lectura de datos y con menos consumo
+import matplotlib.pyplot as plt #Librería para realizar el gráfico
 
-# Se reutiliza el código de limpieza de la sección de Línea para tener los datos mensuales
+#Código de optención de datos
 link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
 datos = pd.read_excel(link)
 
-datos["Fecha"] = pd.to_datetime(datos["Fecha"], errors='coerce')
-datos['Nombre_Mes'] = datos["Fecha"].dt.month_name(locale='es_ES')
-datos['Numero_Mes'] = datos["Fecha"].dt.month
-datos_limpios = datos.dropna(subset=['Nombre_Mes'])
+datos["Fecha"] = pd.to_datetime(datos["Fecha"], errors='coerce') #Se obtiene los datos por fecha
+datos['Nombre_Mes'] = datos["Fecha"].dt.month_name(locale='es_ES') #Se crea una categoría para agregar el nombre del mes
+datos['Numero_Mes'] = datos["Fecha"].dt.month #Se crea una categoría para vincular el número del mes
+datos_limpios = datos.dropna(subset=['Nombre_Mes']) 
+#Esto se hace ya que en el datset solo está la fecha del delito
 
+#Se combinan los nombres de los meses con el de los números
 conteo_mensual = datos_limpios.groupby(['Numero_Mes', 'Nombre_Mes']).size().reset_index(name='Total_Delitos')
 conteo_mensual = conteo_mensual.sort_values(by='Numero_Mes')
 meses = conteo_mensual['Nombre_Mes']
 delitos_mes = conteo_mensual['Total_Delitos']
 
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(10, 6)) #Decir el tamaño y ancho de las barras
 
-ax.bar(meses, delitos_mes, color='#559f80', zorder=3)
+ax.bar(meses, delitos_mes, color='#559f80', zorder=3) 
+#Se especifica de donde se obtienen los datos, cual es el eje x, el eje y el color de las barras
 
+#Se agrega el título y las leyendas
 ax.set_title("Distribución de Delitos por Mes (Barras Verticales)", loc='left')
 ax.set_xlabel("Mes")
 ax.set_ylabel("Cantidad de Delitos")
 
+#Esto es para una mejor lectura del nombre de los meses
 ax.set_axisbelow(True)
 ax.grid(axis='y', linestyle='--', alpha=0.7, zorder=0)
 fig.autofmt_xdate(rotation=35) 
