@@ -58,17 +58,18 @@ filtro = datos["Provincia"] != "DESCONOCIDO" #los valores se transforman en bool
 datos_filtrados = datos[filtro] #los valores se convierten en un data frame
 provincias = datos_filtrados['Provincia'].value_counts()
 
-pivot_df = pd.crosstab(index=datos_filtrados['Provincia'], 
-                      columns=datos_filtrados['Delito'])
+pivot_df = pd.crosstab(index=datos_filtrados['Provincia'], #Las barras se van a mostrar por provincias (eje x)
+                      columns=datos_filtrados['Delito']) #Las barras se se alzan por medio de los delitos (eje y)
 
-num_delitos = len(pivot_df.columns)
+num_delitos = len(pivot_df.columns) #Muestra la cantidad de tipos de delitos que hay (en este caso 6)
 
 COLORES_DELITOS =["#e0f3db", "#a2d2a4", "#7bba91", "#559f80", "#2e846f", "#006a5e"][:num_delitos]
+#Se le asigna un color a cada delito (gracias a num_delitos)
 
-pivot_df.plot.bar(stacked=True,
-                  grid=True,
-                  color=COLORES_DELITOS,
-                  zorder=3)
+pivot_df.plot.bar(stacked=True, #Genera los bloques de división
+                  grid=True, #Genera los cuadros que hay en el fondo
+                  color=COLORES_DELITOS, #Los colores asignados anteriormente
+                  zorder=3) #Las barras están por encima de los cuadros del fondo
 
 plt.show()
 # %%
@@ -78,7 +79,6 @@ import matplotlib.pyplot as plt
 
 link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
 datos = pd.read_excel(link)
-
 filtro_incluir = (datos["Provincia"] == "CARTAGO") | (datos["Provincia"] == "HEREDIA") #Filtro para solo inlcuir a Cartago y Heredia
 filtro_final = filtro_incluir & (datos["Provincia"] != "DESCONOCIDO") #Filtro para excluir a DESCONOCIDO
 datos_filtrados = datos[filtro_final] #los valores se convierten en un data frame
@@ -88,14 +88,13 @@ pivot_df = pd.crosstab(index=datos_filtrados['Provincia'],
                        columns=datos_filtrados['Delito'])
 pivot_df = pivot_df.loc[pivot_df.sum(axis=1).sort_values(ascending=False).index]
 
+fig, ax = plt.subplots(figsize=(10, 6)) #Decir el tamaño y ancho de las barras
 
-fig, ax = plt.subplots(figsize=(10, 6))
+bar_width = 0.12 #separación de las barras
+x = np.arange(len(pivot_df.index)) #asigna un número para los delitos
+num_sub_cats = len(pivot_df.columns) #por medio del número asignado se escoge una posición 
 
-bar_width = 0.12 
-x = np.arange(len(pivot_df.index)) 
-num_sub_cats = len(pivot_df.columns)
-
-offset_group_start = x - (bar_width * num_sub_cats / 2) + (bar_width / 2) 
+offset_group_start = x - (bar_width * num_sub_cats / 2) + (bar_width / 2) #esto nos muestra el "ancho" que van a tener las barras
 
 COLORES_DELITOS =["#e0f3db", "#a2d2a4", "#7bba91", "#559f80", "#2e846f", "#006a5e"][:num_sub_cats] 
 
@@ -107,17 +106,15 @@ for i, sub_cat in enumerate(pivot_df.columns):
         label=sub_cat,
         color=COLORES_DELITOS[i]
     )
-
-ax.set_xlabel("Provincias")
-ax.set_ylabel("Cantidad de Delitos")
-ax.set_title("Comparativa de Delitos entre Cartago y Heredia", loc="left")
-ax.set_xticks(x)
-ax.set_xticklabels(pivot_df.index)
-
-ax.set_axisbelow(True)
-ax.grid(axis='y', zorder=0)
-
-ax.legend(title="Tipo de Delito",
+ax.set_xlabel("Provincias") #Leyenda del eje x
+ax.set_ylabel("Cantidad de Delitos") #Leyenda del eje y
+ax.set_title("Comparativa de Delitos entre Cartago y Heredia", loc="left") #Título del gráfico
+ax.set_xticks(x) #establecer donde marcar las líneas
+ax.set_xticklabels(pivot_df.index) 
+ax.set_axisbelow(True) #lineas del fondo
+ax.grid(axis='y', zorder=0) #lineas por debajo de las barras
+#donde se muestra los delitos y el color que los representa
+ax.legend(title="Tipo de Delito", 
           bbox_to_anchor=(1.01, 1),
             loc='upper left')
 
@@ -137,10 +134,11 @@ datos_filtrados = datos[filtro] #los valores se convierten en un data frame
 delitos = datos_filtrados['Delito'].value_counts()
 orden_delitos = delitos.index.tolist()
 
-my_circle = plt.Circle( (0,0), 0.7, color='white')
+my_circle = plt.Circle( (0,0), 0.7, color='white') #creación del círculo blanco del medio
 
 
 plt.pie(delitos, labels=orden_delitos, colors= ["#006a5e", "#2e846f", "#559f80", "#7bba91", "#a2d2a4", "#e0f3db"])
+#división de colores
 p = plt.gcf()
 p.gca().add_artist(my_circle)
 # %%
@@ -164,27 +162,27 @@ import matplotlib.pyplot as plt
 link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
 datos = pd.read_excel(link)
 
-datos["Fecha"] = pd.to_datetime(datos["Fecha"], errors='coerce')
-datos['Nombre_Mes'] = datos["Fecha"].dt.month_name(locale='es_ES')
-datos['Numero_Mes'] = datos["Fecha"].dt.month
-datos_limpios = datos.dropna(subset=['Nombre_Mes'])
+datos["Fecha"] = pd.to_datetime(datos["Fecha"], errors='coerce') #Filtra los datos por fecha
+datos['Nombre_Mes'] = datos["Fecha"].dt.month_name(locale='es_ES') #Asigna un nombre al mes (solo están las fechas)
+datos['Numero_Mes'] = datos["Fecha"].dt.month #Asigna el número a el mes
+datos_limpios = datos.dropna(subset=['Nombre_Mes']) 
 
-conteo_mensual = datos_limpios.groupby(['Numero_Mes', 'Nombre_Mes']).size().reset_index(name='Total_Delitos')
-conteo_mensual = conteo_mensual.sort_values(by='Numero_Mes')
+conteo_mensual = datos_limpios.groupby(['Numero_Mes', 'Nombre_Mes']).size().reset_index(name='Total_Delitos') #Asigna los casos que hay a los meses
+conteo_mensual = conteo_mensual.sort_values(by='Numero_Mes') #cuentan el total
 
-fig, ax = plt.subplots(figsize=(10, 6)) 
+fig, ax = plt.subplots(figsize=(10, 6)) #definición del gráfico
 
 plt.plot('Nombre_Mes', 'Total_Delitos', 
-         data=conteo_mensual, 
-         linestyle='-', 
-         marker='o', 
-         color='#7bba91',
-         label='Total Delitos')
+         data=conteo_mensual, #de donde obtienen la información
+         linestyle='-', #la líena que van a utilizar
+         marker='o', #para marcar cual mes es
+         color='#7bba91', #color
+         label='Total Delitos') #la división que se hace con el eje y
 
 
-plt.title("Distribución de Delitos por Mes en 2024", loc='left')
-plt.xlabel("Mes")
-plt.ylabel("Cantidad de Delitos")
+plt.title("Distribución de Delitos por Mes en 2024", loc='left') #Título
+plt.xlabel("Mes") #leyenda del eje x
+plt.ylabel("Cantidad de Delitos") #leyenda eje y
 
 fig.autofmt_xdate(rotation=35) 
 
@@ -238,22 +236,23 @@ import matplotlib.pyplot as plt
 
 link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
 datos = pd.read_excel(link)
-
-filtro = datos["Provincia"] != "DESCONOCIDO" 
-datos_filtrados = datos[filtro]
+ 
+filtro = datos["Provincia"] != "DESCONOCIDO"  #los valores se transforman en booleanos y excluye DESCONOCIDO
+datos_filtrados = datos[filtro] #los valores se convierten en un data frame
 provincias_conteo = datos_filtrados['Provincia'].value_counts()
 provincias_ordenadas = provincias_conteo.index.tolist()
 
-fig, ax = plt.subplots(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(10, 6)) #Figura de las barras
 
 ax.bar(provincias_ordenadas, provincias_conteo.values, color='#006a5e', zorder=3)
+#Colores de la barra
 
-ax.set_title("Total de Delitos por Provincia (Barras Simples)", loc='left')
-ax.set_xlabel("Provincia")
-ax.set_ylabel("Cantidad de Delitos")
+ax.set_title("Total de Delitos por Provincia (Barras Simples)", loc='left') #Título del gráfico
+ax.set_xlabel("Provincia") #Leyenda para el eje X
+ax.set_ylabel("Cantidad de Delitos") #Leyenda para el eje Y
 
 ax.set_axisbelow(True)
-ax.grid(axis='y', linestyle='--', alpha=0.7, zorder=0)
+ax.grid(axis='y', linestyle='--', alpha=0.7, zorder=0) #Líneas del fondo
 
 plt.show()
 
@@ -278,17 +277,18 @@ df_percent['Porcentaje'] = df_percent['Porcentaje'] * 100 # Convertir a %
 # Usa Plotly para un gráfico de barras 100% (con mode='percent')
 fig = px.bar(
     df_percent,
-    x='Porcentaje', 
-    y='Provincia',
-    color='Delito',
-    orientation='h',
-    height=500,
-    title="Distribución Porcentual (100%) de Delitos por Provincia",
-    color_discrete_sequence=["#006a5e", "#2e846f", "#559f80", "#7bba91", "#a2d2a4", "#e0f3db"],
-    category_orders={"y": df_percent['Provincia'].unique().tolist()}
+    x='Porcentaje', #eje x
+    y='Provincia', #eje y
+    color='Delito', #el color se va a mostrar en relación a los delitos
+    orientation='h', #orientación "h" para decir que es horizontal
+    height=500, #tamaño de las barras
+    title="Distribución Porcentual (100%) de Delitos por Provincia", #título del gráfico
+    color_discrete_sequence=["#006a5e", "#2e846f", "#559f80", "#7bba91", "#a2d2a4", "#e0f3db"], #colores que se van a mostrar
+    category_orders={"y": df_percent['Provincia'].unique().tolist()} #ordenar las barras por provincia (que está acomodado por delitos)
 )
 
-fig.update_layout(xaxis_title='Porcentaje de Delitos', yaxis_title='Provincia')
+#contenido del hover
+fig.update_layout(xaxis_title='Porcentaje de Delitos', yaxis_title='Provincia') 
 fig.update_traces(
     hovertemplate="<b>Provincia:</b> %{y}<br>" +
                   "<b>Delito:</b> %{customdata[0]}<br>" + 
@@ -303,21 +303,16 @@ import plotly.express as px
 
 link = 'https://sitiooij.poder-judicial.go.cr/phocadownload/Estadisticas/estadsticaspoliciales2024.xls'
 datos = pd.read_excel(link)
-
-provincias_a_comparar = ["SAN JOSE", "ALAJUELA"]
-datos_comparativa = datos[datos["Provincia"].isin(provincias_a_comparar)].copy()
-
+provincias_a_comparar = ["SAN JOSE", "ALAJUELA"] #Filtro para solo inlcuir a Alajuela y San José
+datos_comparativa = datos[datos["Provincia"].isin(provincias_a_comparar)].copy() #Introducir el filtro
 # Contar la ocurrencia de cada Delito en cada Provincia
 delitos_conteo = datos_comparativa.groupby(['Delito', 'Provincia']).size().reset_index(name='Total_Delitos')
-
 # Obtener el orden de los delitos por su frecuencia total (de menor a mayor)
 orden_frecuencia = delitos_conteo.groupby('Delito')['Total_Delitos'].sum().sort_values(ascending=True).index.tolist()
-
 # Convertir el conteo de Alajuela a negativo para la visualización de pirámide
 delitos_conteo['Total_Delitos_Piramide'] = delitos_conteo.apply(
     lambda row: row['Total_Delitos'] * -1 if row['Provincia'] == 'ALAJUELA' else row['Total_Delitos'], axis=1
 )
-
 # Usar Plotly para crear la pirámide
 fig = px.bar(
     delitos_conteo, 
@@ -331,7 +326,6 @@ fig = px.bar(
     # Aplicar el orden de frecuencia
     category_orders={"Delito": orden_frecuencia} 
 )
-
 fig.update_layout(
     barmode='relative',
     xaxis=dict(
@@ -342,14 +336,12 @@ fig.update_layout(
     ),
     yaxis=dict(title='Tipo de Delito')
 )
-
 fig.update_traces(
     hovertemplate="<b>Provincia:</b> %{customdata[0]}<br>" +
                   "<b>Delitos:</b> %{x|:,.0f}<br>" +
                   "<extra></extra>",
     customdata=delitos_conteo[['Provincia']]
 )
-
 fig.show()
 
 
@@ -399,3 +391,4 @@ ax.set_ylim(0, 1)
 plt.title("Gráfico de Araña: Comparativa de Delitos Normalizados (San José, Heredia, Cartago)", size=12, y=1.1, loc='left')
 plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
 plt.show()
+# %%
