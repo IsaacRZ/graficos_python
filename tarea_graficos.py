@@ -392,3 +392,4 @@ ax.set_ylim(0, 1)
 plt.title("Gráfico de Araña: Comparativa de Delitos Normalizados (San José, Heredia, Cartago)", size=12, y=1.1, loc='left')
 plt.legend(loc='upper right', bbox_to_anchor=(0.1, 0.1))
 plt.show()
+# %%
